@@ -121,6 +121,11 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'users.User'
 
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'user': 'users.serializers.CustomUserSerializer',
+}
+
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
