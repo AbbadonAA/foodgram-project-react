@@ -39,3 +39,5 @@ services:
 volumes:
   static_value:
   media_value:
+
+# дополнить - restart: always
