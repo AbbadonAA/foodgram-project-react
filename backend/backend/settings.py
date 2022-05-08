@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'djoser',
     'api',
     'users',
+    'tags_ingr',
     'dotenv',
 ]
 
