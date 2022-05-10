@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'api',
     'users',
     'tags_ingr',
+    'recipes',
     'scripts',
     'dotenv',
 ]
