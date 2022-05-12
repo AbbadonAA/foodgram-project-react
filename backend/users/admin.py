@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-# from recipes.models import Recipe
+from recipes.models import Recipe, IngredientAmount
 from tags_ingr.models import Ingredient, Tag
 
 from .models import User
@@ -38,23 +38,39 @@ class TagAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-# class RecipeAdmin(admin.ModelAdmin):
-#     """Кастомная админка для модели Recipe."""
-#     list_display = (
-#         'pk',
-#         'pub_date',
-#         'tags',
-#         'author',
-#         'ingredients',
-#         'image',
-#         'text',
-#         'cooking_time'
-#     )
+class IngredientAmountInline(admin.TabularInline):
+    model = IngredientAmount
+
+
+class RecipeAdmin(admin.ModelAdmin):
+    """Кастомная админка для модели Recipe."""
+    # list_display = (
+    #     'pk',
+    #     'pub_date',
+    #     'tags',
+    #     'author',
+    #     'ingredients',
+    #     'image',
+    #     'text',
+    #     'cooking_time'
+    # )
+    exclude = ('ingredients',)
+    inlines = (IngredientAmountInline,)
 #     search_fields = ('name', 'text', 'ingredients', 'author')
 #     list_filter = ('tags',)
+
+
+class IngredientAmountAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'recipe',
+        'ingredient',
+        'amount'
+    )
 
 
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
-# admin.site.register(Recipe, RecipeAdmin)
+admin.site.register(Recipe, RecipeAdmin)
+admin.site.register(IngredientAmount, IngredientAmountAdmin)
