@@ -1,11 +1,12 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 from recipes.validators import validate_time
 from tags_ingr.models import Ingredient, Tag
 from users.models import User
 
 
 class Recipe(models.Model):
-    tags = models.ManyToManyField(Tag, related_name='tags')
+    tags = models.ManyToManyField(Tag, related_name='recipes')
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='recipes'
     )
@@ -32,4 +33,14 @@ class Recipe(models.Model):
 class IngredientAmount(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT)
-    amount = models.PositiveIntegerField()
+    amount = models.PositiveIntegerField(
+        validators=[MinValueValidator(1, 'Не может быть менее 1')]
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'ingredient'],
+                name='unique_recipe_ingredient'
+            )
+        ]
