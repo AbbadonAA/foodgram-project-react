@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import Group
 from recipes.models import IngredientAmount, Recipe
 from tags_ingr.models import Ingredient, Tag
 
@@ -44,20 +45,18 @@ class IngredientAmountInline(admin.TabularInline):
 
 class RecipeAdmin(admin.ModelAdmin):
     """Кастомная админка для модели Recipe."""
-    # list_display = (
-    #     'pk',
-    #     'pub_date',
-    #     'tags',
-    #     'author',
-    #     'ingredients',
-    #     'image',
-    #     'text',
-    #     'cooking_time'
-    # )
+    list_display = (
+        'pk',
+        'pub_date',
+        'author',
+        'image',
+        'text',
+        'cooking_time'
+    )
     exclude = ('ingredients',)
     inlines = (IngredientAmountInline,)
-#     search_fields = ('name', 'text', 'ingredients', 'author')
-#     list_filter = ('tags',)
+    search_fields = ('name', 'text', 'author')
+    list_filter = ('tags',)
 
 
 class IngredientAmountAdmin(admin.ModelAdmin):
@@ -69,6 +68,7 @@ class IngredientAmountAdmin(admin.ModelAdmin):
     )
 
 
+admin.site.unregister(Group)
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
