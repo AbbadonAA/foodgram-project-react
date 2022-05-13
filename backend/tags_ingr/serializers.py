@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from tags_ingr.models import Ingredient, Tag
 
 

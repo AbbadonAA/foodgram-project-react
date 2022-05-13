@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from recipes.models import Recipe, IngredientAmount
+from recipes.models import IngredientAmount, Recipe
 from tags_ingr.models import Ingredient, Tag
 
 from .models import User
