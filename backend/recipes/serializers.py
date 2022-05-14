@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from drf_base64.fields import Base64ImageField
 from recipes.models import IngredientAmount, Recipe
+from recipes.validators import validate_ingredients, validate_tags
 from rest_framework import serializers
 from tags_ingr.models import Ingredient, Tag
 from tags_ingr.serializers import TagSerializer
@@ -36,11 +37,13 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         ingredients_data = self.initial_data.get('ingredients')
+        valid_ingredients = validate_ingredients(ingredients_data)
         recipe = Recipe.objects.create(**validated_data)
         tags_id = self.initial_data.get('tags')
-        tags = Tag.objects.filter(id__in=tags_id)
+        valid_tags = validate_tags(tags_id)
+        tags = Tag.objects.filter(id__in=valid_tags)
         recipe.tags.set(tags)
-        for ingredient_data in ingredients_data:
+        for ingredient_data in valid_ingredients:
             ingredient = get_object_or_404(
                 Ingredient, id=ingredient_data.get('id'))
             IngredientAmount.objects.create(
