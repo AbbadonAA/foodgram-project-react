@@ -1,12 +1,17 @@
 from recipes.models import Recipe
 from recipes.serializers import RecipeSerializer
 from rest_framework import viewsets
+from recipes.filters import TagRecipeFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     http_method_names = ['get', 'post', 'patch', 'head', 'options']
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = TagRecipeFilter
+
     # filter_backends = [filters.SearchFilter]
     # search_fields = ('^ingredient__name',)
 
