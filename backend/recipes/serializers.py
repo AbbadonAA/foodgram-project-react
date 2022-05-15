@@ -59,21 +59,19 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.cooking_time = validated_data.get(
             'cooking_time', instance.cooking_time)
         instance.save()
-        recipe = get_object_or_404(Recipe, id=instance.id)
-        recipe.tags.remove()
+        instance.tags.remove()
         tags_id = self.initial_data.get('tags')
         valid_tags = validate_tags(tags_id)
         tags = Tag.objects.filter(id__in=valid_tags)
-        recipe.tags.set(tags)
+        instance.tags.set(tags)
         ingredients_data = self.initial_data.get('ingredients')
         valid_ingredients = validate_ingredients(ingredients_data)
-        recipe.ingredientamount_set.filter(recipe__in=[recipe.id]).delete()
-        # IngredientAmount.objects.filter(recipe__in=[recipe.id]).delete()
+        instance.ingredientamount_set.filter(recipe__in=[instance.id]).delete()
         for ingredient_data in valid_ingredients:
             ingredient = get_object_or_404(
                 Ingredient, id=ingredient_data.get('id'))
             IngredientAmount.objects.create(
-                recipe=recipe,
+                recipe=instance,
                 ingredient=ingredient,
                 amount=ingredient_data.get('amount'))
         return instance
