@@ -6,6 +6,16 @@ from rest_framework import viewsets
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+    http_method_names = ['get', 'post', 'patch', 'head', 'options']
+    # filter_backends = [filters.SearchFilter]
+    # search_fields = ('^ingredient__name',)
+
+    # search_nested_fields = {
+    #     'ingredients': {
+    #         'path': 'ingredients',
+    #         'fields': ['^name'],
+    #     }
+    # }
 
     # def get_serializer_class(self):
     #     if self.action == 'list' or self.action == 'retrieve':
