@@ -1,8 +1,8 @@
+from django_filters.rest_framework import DjangoFilterBackend
+from recipes.filters import TagRecipeFilter
 from recipes.models import Recipe
 from recipes.serializers import RecipeSerializer
 from rest_framework import viewsets
-from recipes.filters import TagRecipeFilter
-from django_filters.rest_framework import DjangoFilterBackend
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
