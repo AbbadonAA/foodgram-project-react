@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from recipes.models import IngredientAmount, Recipe
 from tags_ingr.models import Ingredient, Tag
 
-from .models import User
+from .models import Subscription, User
 
 
 class CustomUserAdmin(UserAdmin):
@@ -70,6 +70,7 @@ class IngredientAmountAdmin(admin.ModelAdmin):
 
 admin.site.unregister(Group)
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(Subscription)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
