@@ -1,4 +1,4 @@
-from drf_base64.fields import Base64ImageField
+# from drf_base64.fields import Base64ImageField
 from recipes.models import Recipe
 from rest_framework import serializers
 from users.models import Subscription, User
@@ -18,11 +18,13 @@ class CustomUserSerializer(serializers.ModelSerializer):
         write_only_fields = ('password',)
 
     def get_is_subscribed(self, obj):
+        """Статус подписки на автора."""
         user_id = self.context.get('request').user.id
         return Subscription.objects.filter(
             author=obj.id, user=user_id).exists()
 
     def create(self, validated_data):
+        """Создание нового пользователя."""
         user = User.objects.create(
             email=validated_data['email'],
             username=validated_data['username'],
@@ -32,15 +34,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
-
-
-class SubscriptionRecipeSerializer(serializers.ModelSerializer):
-    image = Base64ImageField()
-
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
-        read_only_fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
@@ -61,11 +54,14 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         )
 
     def get_is_subscribed(self, obj):
+        """Статус подписки на автора."""
         user = self.context.get('request').user
         return Subscription.objects.filter(
             author=obj.author, user=user).exists()
 
     def get_recipes(self, obj):
+        """Получение списка рецептов автора."""
+        from recipes.serializers import SubscriptionRecipeSerializer
         limit = self.context.get('request').GET.get('recipes_limit')
         recipe_obj = Recipe.objects.filter(author=obj.author)
         if limit:
@@ -74,4 +70,5 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_recipes_count(self, obj):
+        """Количество опубликованных автором рецептов."""
         return Recipe.objects.filter(author=obj.author).count()

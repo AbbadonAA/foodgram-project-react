@@ -21,6 +21,15 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
         )
 
 
+class SubscriptionRecipeSerializer(serializers.ModelSerializer):
+    image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+        read_only_fields = ('id', 'name', 'image', 'cooking_time')
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     tags = TagSerializer(read_only=True, many=True)
@@ -35,14 +44,8 @@ class RecipeSerializer(serializers.ModelSerializer):
             'image', 'text', 'cooking_time'
         )
 
-    def create(self, validated_data):
-        ingredients_data = self.initial_data.get('ingredients')
-        valid_ingredients = validate_ingredients(ingredients_data)
-        recipe = Recipe.objects.create(**validated_data)
-        tags_id = self.initial_data.get('tags')
-        valid_tags = validate_tags(tags_id)
-        tags = Tag.objects.filter(id__in=valid_tags)
-        recipe.tags.set(tags)
+    def create_ingredient_amount(self, valid_ingredients, recipe):
+        """Создание уникальных записей: ингредиент - рецепт - количество."""
         for ingredient_data in valid_ingredients:
             ingredient = get_object_or_404(
                 Ingredient, id=ingredient_data.get('id'))
@@ -50,9 +53,29 @@ class RecipeSerializer(serializers.ModelSerializer):
                 recipe=recipe,
                 ingredient=ingredient,
                 amount=ingredient_data.get('amount'))
+
+    def create_tags(self, data, recipe):
+        """Отправка на валидацию и создание тэгов у рецепта."""
+        valid_tags = validate_tags(data.get('tags'))
+        tags = Tag.objects.filter(id__in=valid_tags)
+        recipe.tags.set(tags)
+
+    def create(self, validated_data):
+        """Создание рецепта - writable nested serializers."""
+        valid_ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
+        self.create_tags(self.initial_data, recipe)
+        self.create_ingredient_amount(valid_ingredients, recipe)
         return recipe
 
+    def validate(self, data):
+        ingredients = self.initial_data.get('ingredients')
+        valid_ingredients = validate_ingredients(ingredients)
+        data['ingredients'] = valid_ingredients
+        return data
+
     def update(self, instance, validated_data):
+        """Изменение рецепта - writable nested serializers."""
         instance.name = validated_data.get('name', instance.name)
         instance.image = validated_data.get('image', instance.image)
         instance.text = validated_data.get('text', instance.text)
@@ -60,18 +83,9 @@ class RecipeSerializer(serializers.ModelSerializer):
             'cooking_time', instance.cooking_time)
         instance.save()
         instance.tags.remove()
-        tags_id = self.initial_data.get('tags')
-        valid_tags = validate_tags(tags_id)
-        tags = Tag.objects.filter(id__in=valid_tags)
-        instance.tags.set(tags)
-        ingredients_data = self.initial_data.get('ingredients')
-        valid_ingredients = validate_ingredients(ingredients_data)
+        self.create_tags(self.initial_data, instance)
         instance.ingredientamount_set.filter(recipe__in=[instance.id]).delete()
-        for ingredient_data in valid_ingredients:
-            ingredient = get_object_or_404(
-                Ingredient, id=ingredient_data.get('id'))
-            IngredientAmount.objects.create(
-                recipe=instance,
-                ingredient=ingredient,
-                amount=ingredient_data.get('amount'))
+        valid_ingredients = validated_data.get(
+            'ingredients', instance.ingredients)
+        self.create_ingredient_amount(valid_ingredients, instance)
         return instance

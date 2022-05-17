@@ -15,6 +15,7 @@ class CustomUserViewSet(UserViewSet):
     @action(detail=False, url_path='subscriptions',
             url_name='subscriptions')
     def subscriptions(self, request):
+        """Список авторов, на которых подписан пользователь."""
         user = request.user
         queryset = Subscription.objects.filter(user=user)
         pages = self.paginate_queryset(queryset)
@@ -25,6 +26,7 @@ class CustomUserViewSet(UserViewSet):
     @action(methods=['post'], detail=True, url_path='subscribe',
             url_name='subscribe')
     def subscribe(self, request, id=None):
+        """Подписка на автора."""
         user = request.user
         author = get_object_or_404(User, id=id)
         if user == author:
@@ -44,6 +46,7 @@ class CustomUserViewSet(UserViewSet):
 
     @subscribe.mapping.delete
     def delete_subscribe(self, request, id=None):
+        """Отписка от автора."""
         user = request.user
         author = get_object_or_404(User, id=id)
         if user == author:
