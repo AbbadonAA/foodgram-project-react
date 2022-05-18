@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from drf_base64.fields import Base64ImageField
-from recipes.models import IngredientAmount, Recipe
+from recipes.models import Favorite, IngredientAmount, Recipe, ShoppingCart
 from recipes.validators import validate_ingredients, validate_tags
 from rest_framework import serializers
 from tags_ingr.models import Ingredient, Tag
@@ -36,13 +36,27 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientAmountSerializer(
         read_only=True, many=True, source='ingredientamount_set')
     image = Base64ImageField()
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
         fields = (
-            'id', 'tags', 'author', 'ingredients', 'name',
-            'image', 'text', 'cooking_time'
+            'id', 'tags', 'author', 'ingredients', 'is_favorited',
+            'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time'
         )
+
+    def get_is_favorited(self, obj):
+        """Статус - рецепт в избранном или нет."""
+        user_id = self.context.get('request').user.id
+        return Favorite.objects.filter(
+            user=user_id, recipe=obj.id).exists()
+
+    def get_is_in_shopping_cart(self, obj):
+        """Статус - рецепт в избранном или нет."""
+        user_id = self.context.get('request').user.id
+        return ShoppingCart.objects.filter(
+            user=user_id, recipe=obj.id).exists()
 
     def create_ingredient_amount(self, valid_ingredients, recipe):
         """Создание уникальных записей: ингредиент - рецепт - количество."""
