@@ -15,3 +15,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        """Запрет частичного обновления."""
+        kwargs['partial'] = False
+        return super().update(request, *args, **kwargs)
