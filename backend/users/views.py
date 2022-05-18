@@ -51,7 +51,7 @@ class CustomUserViewSet(UserViewSet):
         author = get_object_or_404(User, id=id)
         if user == author:
             return Response(
-                {'errors': 'Нельзя подписаться на себя'},
+                {'errors': 'Нельзя отписаться от себя'},
                 status=status.HTTP_400_BAD_REQUEST)
         subscription = Subscription.objects.filter(
             author=author, user=user)
