@@ -21,7 +21,7 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
         )
 
 
-class SubscriptionRecipeSerializer(serializers.ModelSerializer):
+class SmallRecipeSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
 
     class Meta:

@@ -1,4 +1,3 @@
-# from drf_base64.fields import Base64ImageField
 from recipes.models import Recipe
 from rest_framework import serializers
 from users.models import Subscription, User
@@ -61,12 +60,12 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         """Получение списка рецептов автора."""
-        from recipes.serializers import SubscriptionRecipeSerializer
+        from recipes.serializers import SmallRecipeSerializer
         limit = self.context.get('request').GET.get('recipes_limit')
         recipe_obj = Recipe.objects.filter(author=obj.author)
         if limit:
             recipe_obj = recipe_obj[:int(limit)]
-        serializer = SubscriptionRecipeSerializer(recipe_obj, many=True)
+        serializer = SmallRecipeSerializer(recipe_obj, many=True)
         return serializer.data
 
     def get_recipes_count(self, obj):
