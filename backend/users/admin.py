@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
-from recipes.models import IngredientAmount, Recipe
+from recipes.models import Favorite, IngredientAmount, Recipe, ShoppingCart
 from tags_ingr.models import Ingredient, Tag
 
 from .models import Subscription, User
@@ -74,4 +74,6 @@ admin.site.register(Subscription)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
+admin.site.register(Favorite)
+admin.site.register(ShoppingCart)
 admin.site.register(IngredientAmount, IngredientAmountAdmin)
