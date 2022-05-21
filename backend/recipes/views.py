@@ -5,11 +5,11 @@ from django_filters.rest_framework import DjangoFilterBackend
 from fpdf import FPDF
 from recipes.filters import RecipeFilter
 from recipes.models import Favorite, IngredientAmount, Recipe, ShoppingCart
+from recipes.permissions import AuthorOrReadOnly
 from recipes.serializers import RecipeSerializer, SmallRecipeSerializer
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from recipes.permissions import AuthorOrReadOnly
 
 
 class RecipeViewSet(viewsets.ModelViewSet):

@@ -40,5 +40,3 @@ volumes:
   pgdata:
   static_value:
   media_value:
-
-# дополнить - restart: always
