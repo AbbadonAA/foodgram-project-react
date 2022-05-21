@@ -50,12 +50,12 @@ class Favorite(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='user_f',
+        related_name='favorite',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='recipe_f'
+        related_name='favorite'
     )
 
     class Meta:
@@ -71,12 +71,12 @@ class ShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='user_s',
+        related_name='sh_cart',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='recipe_s'
+        related_name='sh_cart'
     )
 
     class Meta:

@@ -1,7 +1,14 @@
+# from django.core.files import File
+# from django.http import FileResponse
+# from django.utils.http import urlquote
+
+from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from fpdf import FPDF
 from recipes.filters import RecipeFilter
-from recipes.models import Favorite, Recipe, ShoppingCart
+from recipes.models import Favorite, IngredientAmount, Recipe, ShoppingCart
 from recipes.serializers import RecipeSerializer, SmallRecipeSerializer
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -83,3 +90,43 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
         cart.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['get'], detail=False, url_path='download_shopping_cart',
+            url_name='download_shopping_cart')
+    def download_cart(self, request):
+        """Формирование и скачивание списка покупок."""
+        user = request.user
+        ingredients = IngredientAmount.objects.filter(
+            recipe__sh_cart__user=user).values(
+                'ingredient__name', 'ingredient__measurement_unit').annotate(
+                    Sum('amount', distinct=True))
+        lines = []
+        for ingredient in ingredients:
+            name = ingredient['ingredient__name']
+            unit = ingredient['ingredient__measurement_unit']
+            amount = ingredient['amount__sum']
+            lines.append(f'{name} - {amount} {unit}')
+        data = '\n'.join(lines)
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("helvetica", "B", 16)
+        pdf.cell(40, 10, data)
+        file = pdf.output('shopping_cart.pdf')
+        response = HttpResponse(
+            content_type='application/pdf', status=status.HTTP_200_OK)
+        response['Content-Disposition'] = (
+            'attachment; filename="shopping_cart.pdf"')
+        response.write(file)
+        return response
+
+        # response = HttpResponse(
+        #     content_type='text/plain', status=status.HTTP_200_OK)
+        # response['Content-Disposition'] = (
+        #     'attachment; filename="shopping_cart.txt"')
+        # response.write('Список покупок:' + '\n\n')
+        # for ingredient in ingredients:
+        #     name = ingredient['ingredient__name']
+        #     unit = ingredient['ingredient__measurement_unit']
+        #     amount = ingredient['amount__sum']
+        #     response.write(f'{name} - {amount} {unit}' + '\n')
+        # return response
