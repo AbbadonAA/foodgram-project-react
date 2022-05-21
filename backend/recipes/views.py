@@ -9,6 +9,7 @@ from recipes.serializers import RecipeSerializer, SmallRecipeSerializer
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from recipes.permissions import AuthorOrReadOnly
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -16,6 +17,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     http_method_names = [
         'get', 'post', 'patch', 'delete', 'head', 'options']
+    permission_classes = (AuthorOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filter_class = RecipeFilter
 
