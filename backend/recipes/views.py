@@ -27,65 +27,54 @@ class RecipeViewSet(viewsets.ModelViewSet):
         kwargs['partial'] = False
         return super().update(request, *args, **kwargs)
 
-    @action(methods=['post'], detail=True, url_path='favorite',
+    def add(self, model, user, pk, name):
+        """Добавление рецепта в список пользователя."""
+        recipe = get_object_or_404(Recipe, pk=pk)
+        relation = model.objects.filter(user=user, recipe=recipe)
+        if relation.exists():
+            return Response(
+                {'errors': f'Нельзя повторно добавить рецепт в {name}'},
+                status=status.HTTP_400_BAD_REQUEST)
+        model.objects.create(user=user, recipe=recipe)
+        serializer = SmallRecipeSerializer(recipe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete_relation(self, model, user, pk, name):
+        """"Удаление рецепта из списка пользователя."""
+        recipe = get_object_or_404(Recipe, pk=pk)
+        relation = model.objects.filter(user=user, recipe=recipe)
+        if not relation.exists():
+            return Response(
+                {'errors': f'Нельзя повторно удалить рецепт из {name}'},
+                status=status.HTTP_400_BAD_REQUEST)
+        relation.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['post', 'delete'], detail=True, url_path='favorite',
             url_name='favorite')
     def favorite(self, request, pk=None):
-        """Добавление рецептов в избранное."""
+        """Добавление и удаление рецептов - Избранное."""
         user = request.user
-        recipe = get_object_or_404(Recipe, pk=pk)
-        favorite = Favorite.objects.filter(user=user, recipe=recipe).exists()
-        if favorite:
-            return Response(
-                {'errors': 'Нельзя повторно добавить рецепт в избранное'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        Favorite.objects.create(user=user, recipe=recipe)
-        serializer = SmallRecipeSerializer(recipe)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.method == 'POST':
+            name = 'избранное'
+            return self.add(Favorite, user, pk, name)
+        if request.method == 'DELETE':
+            name = 'избранного'
+            return self.delete_relation(Favorite, user, pk, name)
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @favorite.mapping.delete
-    def delete_favorite(self, request, pk=None):
-        """Удаление рецепта из избранного."""
-        user = request.user
-        recipe = get_object_or_404(Recipe, pk=pk)
-        favorite = Favorite.objects.filter(user=user, recipe=recipe)
-        if not favorite.exists():
-            return Response(
-                {'errors': 'Нельзя повторно удалить рецепт из избранного'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        favorite.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    @action(methods=['post'], detail=True, url_path='shopping_cart',
+    @action(methods=['post', 'delete'], detail=True, url_path='shopping_cart',
             url_name='shopping_cart')
     def shopping_cart(self, request, pk=None):
-        """Добавление рецептов в избранное."""
+        """Добавление и удаление рецептов - Список покупок."""
         user = request.user
-        recipe = get_object_or_404(Recipe, pk=pk)
-        cart = ShoppingCart.objects.filter(user=user, recipe=recipe).exists()
-        if cart:
-            return Response(
-                {'errors': 'Нельзя повторно добавить рецепт в список покупок'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        ShoppingCart.objects.create(user=user, recipe=recipe)
-        serializer = SmallRecipeSerializer(recipe)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    @shopping_cart.mapping.delete
-    def delete_shopping_cart(self, request, pk=None):
-        """Удаление рецепта из избранного."""
-        user = request.user
-        recipe = get_object_or_404(Recipe, pk=pk)
-        cart = ShoppingCart.objects.filter(user=user, recipe=recipe)
-        if not cart.exists():
-            return Response(
-                {'errors': 'Нельзя повторно удалить рецепт из списка покупок'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        cart.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if request.method == 'POST':
+            name = 'список покупок'
+            return self.add(ShoppingCart, user, pk, name)
+        if request.method == 'DELETE':
+            name = 'списка покупок'
+            return self.delete_relation(ShoppingCart, user, pk, name)
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     @action(methods=['get'], detail=False, url_path='download_shopping_cart',
             url_name='download_shopping_cart')
@@ -103,11 +92,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         pdf.set_font('DejaVu', size=14)
         pdf.cell(txt='Список покупок', center=True)
         pdf.ln(8)
-        for ingredient in ingredients:
+        for i, ingredient in enumerate(ingredients):
             name = ingredient['ingredient__name']
             unit = ingredient['ingredient__measurement_unit']
             amount = ingredient['amount__sum']
-            pdf.cell(40, 10, f'{name} - {amount} {unit}')
+            pdf.cell(40, 10, f'{i + 1}) {name} - {amount} {unit}')
             pdf.ln()
         file = pdf.output(dest='S')
         response = HttpResponse(
