@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from recipes.models import Recipe
+# from recipes.models import Recipe
 from users.models import Subscription, User
 
 
@@ -63,7 +63,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         """Получение списка рецептов автора."""
         from recipes.serializers import SmallRecipeSerializer
         limit = self.context.get('request').GET.get('recipes_limit')
-        recipe_obj = Recipe.objects.filter(author=obj.author)
+        recipe_obj = obj.author.recipes
         if limit:
             recipe_obj = recipe_obj[:int(limit)]
         serializer = SmallRecipeSerializer(recipe_obj, many=True)

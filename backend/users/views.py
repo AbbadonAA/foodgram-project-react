@@ -18,7 +18,7 @@ class CustomUserViewSet(UserViewSet):
     def subscriptions(self, request):
         """Список авторов, на которых подписан пользователь."""
         user = request.user
-        queryset = Subscription.objects.filter(user=user)
+        queryset = user.follower.all()
         pages = self.paginate_queryset(queryset)
         serializer = SubscriptionSerializer(
             pages, many=True, context={'request': request})
