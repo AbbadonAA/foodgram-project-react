@@ -1,15 +1,17 @@
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+
 from django_filters.rest_framework import DjangoFilterBackend
 from fpdf import FPDF
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
 from recipes.filters import RecipeFilter
 from recipes.models import Favorite, IngredientAmount, Recipe, ShoppingCart
 from recipes.permissions import AuthorOrReadOnly
 from recipes.serializers import RecipeSerializer, SmallRecipeSerializer
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
 
 
 class RecipeViewSet(viewsets.ModelViewSet):

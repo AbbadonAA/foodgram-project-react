@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
+
 from recipes.models import Favorite, IngredientAmount, Recipe, ShoppingCart
 from tags_ingr.models import Ingredient, Tag
 

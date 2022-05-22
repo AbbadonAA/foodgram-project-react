@@ -1,7 +1,8 @@
 import os
 
-import psycopg2
 from django.core.management.base import BaseCommand
+
+import psycopg2
 
 HOST = os.getenv('DB_HOST')
 NAME = os.getenv('DB_NAME')
