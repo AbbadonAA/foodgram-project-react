@@ -43,7 +43,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     first_name = serializers.ReadOnlyField(source='author.first_name')
     last_name = serializers.ReadOnlyField(source='author.last_name')
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
+    recipes_count = serializers.ReadOnlyField(source='author.recipes.count')
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
@@ -68,7 +68,3 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             recipe_obj = recipe_obj[:int(limit)]
         serializer = SmallRecipeSerializer(recipe_obj, many=True)
         return serializer.data
-
-    def get_recipes_count(self, obj):
-        """Количество опубликованных автором рецептов."""
-        return Recipe.objects.filter(author=obj.author).count()
