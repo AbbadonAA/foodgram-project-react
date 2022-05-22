@@ -56,6 +56,7 @@ class RecipeAdmin(admin.ModelAdmin):
     exclude = ('ingredients',)
     inlines = (IngredientAmountInline,)
     list_filter = ('author', 'name', 'tags')
+    search_fields = ('author__username', 'name', 'tags__name')
     empty_value_display = '-пусто-'
 
     def count_added(self, obj):
@@ -69,6 +70,7 @@ class IngredientAmountAdmin(admin.ModelAdmin):
         'ingredient',
         'amount'
     )
+    search_fields = ('recipe__name', 'ingredient__name')
 
 
 class FavoriteShoppingAdmin(admin.ModelAdmin):
@@ -77,6 +79,7 @@ class FavoriteShoppingAdmin(admin.ModelAdmin):
         'user',
         'recipe'
     )
+    search_fields = ('user__username', 'recipe__name')
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
@@ -85,6 +88,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
         'user',
         'author'
     )
+    search_fields = ('user__username', 'author__username')
 
 
 admin.site.unregister(Group)
