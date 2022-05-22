@@ -12,7 +12,6 @@ from .models import Subscription, User
 
 class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
-    http_method_names = ['get', 'post', 'delete', 'head', 'options']
 
     @action(detail=False, url_path='subscriptions',
             url_name='subscriptions', permission_classes=[IsAuthenticated])
