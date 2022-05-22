@@ -47,16 +47,18 @@ class RecipeAdmin(admin.ModelAdmin):
     """Кастомная админка для модели Recipe."""
     list_display = (
         'pk',
-        'pub_date',
+        'name',
         'author',
         'image',
-        'text',
-        'cooking_time'
+        'count_added'
     )
     exclude = ('ingredients',)
     inlines = (IngredientAmountInline,)
-    search_fields = ('name', 'text', 'author')
-    list_filter = ('tags',)
+    list_filter = ('author', 'name', 'tags')
+    empty_value_display = '-пусто-'
+
+    def count_added(self, obj):
+        return obj.favorite.count()
 
 
 class IngredientAmountAdmin(admin.ModelAdmin):
@@ -68,12 +70,28 @@ class IngredientAmountAdmin(admin.ModelAdmin):
     )
 
 
+class FavoriteShoppingAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'user',
+        'recipe'
+    )
+
+
+class SubscriptionAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'user',
+        'author'
+    )
+
+
 admin.site.unregister(Group)
 admin.site.register(User, CustomUserAdmin)
-admin.site.register(Subscription)
+admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(Favorite)
-admin.site.register(ShoppingCart)
+admin.site.register(Favorite, FavoriteShoppingAdmin)
+admin.site.register(ShoppingCart, FavoriteShoppingAdmin)
 admin.site.register(IngredientAmount, IngredientAmountAdmin)
