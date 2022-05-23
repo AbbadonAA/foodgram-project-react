@@ -2,9 +2,7 @@ version: '3.3'
 services:
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: abbadon666666/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
   db:
@@ -14,9 +12,8 @@ services:
     env_file:
       - ./.env
   backend:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
+    image: abbadon666666/foodgram_backend:latest
+    restart: always
     volumes:
       - static_value:/app_back/static/
       - media_value:/app_back/media/
