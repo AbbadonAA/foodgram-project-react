@@ -62,8 +62,8 @@ jobs:
         script: |
           cd foodgram/infra/
           sudo docker-compose stop
-          sudo docker-compose rm backend
-          sudo docker-compose rmi backend
+          echo y|sudo docker-compose rm backend
+          sudo docker rmi abbadon666666/foodgram_backend
           touch .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
