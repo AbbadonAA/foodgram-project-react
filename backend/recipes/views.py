@@ -23,11 +23,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        """Запрет частичного обновления."""
-        kwargs['partial'] = False
-        return super().update(request, *args, **kwargs)
-
     def add(self, model, user, pk, name):
         """Добавление рецепта в список пользователя."""
         recipe = get_object_or_404(Recipe, pk=pk)
