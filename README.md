@@ -12,8 +12,6 @@
 - http://abbadon.zapto.org/recipes
 - http://51.250.109.189/
 - Админ-зона: http://abbadon.zapto.org/admin/
-  - username: admin
-  - password: foodgram_admin
 - API: http://abbadon.zapto.org/api/
 
 ## Для запуска на собственном сервере:
@@ -50,8 +48,6 @@ docker-compose exec backend python manage.py add_data ingredients.csv tags_ingr_
 ```
 После выполнения этих дейстий проект будет запущен в трех контейнерах (backend, db, nginx) и доступен по адресам:
 
-http://<ip-адрес>/
-
-API проекта: http://<ip-адрес>/api/
-
-Admin-зона: http://<ip-адрес>/admin/
+- http://<ip-адрес>/
+- API проекта: http://<ip-адрес>/api/
+- Admin-зона: http://<ip-адрес>/admin/
