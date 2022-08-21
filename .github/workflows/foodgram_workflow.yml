@@ -45,7 +45,7 @@ jobs:
         tags: abbadon666666/foodgram_backend:latest
   
   deploy:
-    name: Deploy YCloud
+    name: Deploy MyServer
     runs-on: ubuntu-latest
     needs: build_and_push
     if:
