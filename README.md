@@ -10,9 +10,9 @@
 
 ## Доступ
 
-Проект запущен на сервере YCloud и доступен по адресам:
+Проект запущен на сервере и доступен по адресам:
 - http://abbadon.zapto.org/recipes
-- http://51.250.109.189/
+- http://45.141.103.147/recipes
 - Админ-зона: http://abbadon.zapto.org/admin/
 - API: http://abbadon.zapto.org/api/
 
