@@ -15,7 +15,7 @@
 - http://45.141.103.147/recipes
 - Админ-зона: http://abbadon.zapto.org/admin/
 - API: http://abbadon.zapto.org/api/
-
+ 
 ## Стек технологий
 - Python
 - Django
